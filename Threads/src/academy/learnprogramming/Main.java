@@ -1,5 +1,7 @@
 package academy.learnprogramming;
 
+import com.sun.deploy.net.proxy.ProxyUnavailableException;
+
 import static academy.learnprogramming.ThreadColor.*;
 
 public class Main {
@@ -9,8 +11,7 @@ public class Main {
 
         Thread anotherThread = new AnotherThread();
         anotherThread.setName("== Another Thread ==");
-//        anotherThread.start();
-        anotherThread.run();
+        anotherThread.start();
 
         new Thread() {
             public void run() {
@@ -21,13 +22,18 @@ public class Main {
         Thread myRunnableThread = new Thread(new MyRunnable() {
             @Override
             public void run() {
-//                super.run();
-                System.out.println(ANSI_RED + "Hello from the anonymous class's implementation");
+                System.out.println(ANSI_RED + "Hello from the anonymous class's implementation of run()");
+                try {
+                    anotherThread.join();
+                    System.out.println(ANSI_RED + "AnotherThread terminated, or timed out, so I'm running again");
+                } catch(InterruptedException e) {
+                    System.out.println(ANSI_RED + "I couldn't wait after all. I was interrupted");
+                }
             }
         });
 
         myRunnableThread.start();
 
-        System.out.println(ANSI_PURPLE + "Hello again from the main thread"); // if no color is specified, the last color is printed
+        System.out.println(ANSI_PURPLE+"Hello again from the main thread");
     }
 }
